@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./LeafletMap.css";
-import L, { Map } from 'leaflet';
+import L, { LayerGroup, Map } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 export interface LeafletMapProps {
@@ -8,30 +8,46 @@ export interface LeafletMapProps {
 }
 
 const LeafletMap = (props: LeafletMapProps) => {
-  const mapRef = useRef<Map>();
+  const mapRef = useRef<Map | null>(null);
+  const [layerGroup, setLayerGroup] = useState<LayerGroup>(L.layerGroup());
 
   useEffect(() => {
-    if(!mapRef.current)
-    {
-      console.log('initializing leaflet.')
-      mapRef.current = L.map('map', {
-        layers: [
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
-        ]
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        if (!mapRef.current) {
+          mapRef.current = L.map('map', {
+            layers: [
+              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
+              layerGroup
+            ]
+          })
+            .setView([latitude, longitude], 13)
+
+          mapRef.current.on('click', (e: any) => {
+            const { lat, lng } = e.latlng;
+            // Place a marker where the user clicked
+            let marker = L.marker([lat, lng]);
+            marker.bindPopup("You clicked here!").openPopup();
+            layerGroup.addLayer(marker)
+          });
+        }
       })
-      .setView([51.505, -0.09], 13)
     }
-    else
-    {
+    else {
       console.log('already initialized')
     }
-
-  }, []);
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove(); // This properly cleans up the map instance
+      }
+    };
+  }, [layerGroup]);
 
   return (
     <>
       <h3>{props.label}</h3>
-      <div id="map" className="map-container"/>
+      <div id="map" className="map-container" />
     </>
   )
 };
