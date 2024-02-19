@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./LeafletMap.css";
-import L, { LayerGroup, Map } from 'leaflet';
+import L, { LayerGroup, LeafletMouseEvent, Map } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 export interface LeafletMapProps {
   label: string;
+  onMarkerClick: (event: LeafletMouseEvent) => void
 }
 
 const LeafletMap = (props: LeafletMapProps) => {
@@ -29,6 +30,7 @@ const LeafletMap = (props: LeafletMapProps) => {
             // Place a marker where the user clicked
             let marker = L.marker([lat, lng]);
             marker.bindPopup("You clicked here!").openPopup();
+            marker.on('click', props.onMarkerClick)
             layerGroup.addLayer(marker)
           });
         }
