@@ -27,6 +27,13 @@ const LeafletMap = (props: LeafletMapProps) => {
     props.onMarkerClick(undefined)
   }
 
+  const onEachFeature = (feature: any, layer: L.Layer) => {
+    if (feature.properties && feature.properties.popupContent) {
+      layer.bindPopup(feature.properties.popupContent);
+      layer.on('click', handleOnMarkerClick)
+  }
+  }
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -43,7 +50,7 @@ const LeafletMap = (props: LeafletMapProps) => {
           if(props.geojson)
           {
             console.log('Adding GeoJSON')
-            L.geoJSON(props.geojson).addTo(mapRef.current)
+            L.geoJSON(props.geojson, { onEachFeature: onEachFeature}).addTo(mapRef.current)
           }
 
           mapRef.current.on('click', (e: any) => {
