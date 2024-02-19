@@ -12,16 +12,14 @@ const LeafletMap = (props: LeafletMapProps) => {
   const mapRef = useRef<Map | null>(null);
   const [layerGroup, setLayerGroup] = useState<LayerGroup>(L.layerGroup());
 
-  const handleOnMarkerClick = (event: LeafletMouseEvent) =>
-  {
+  const handleOnMarkerClick = (event: LeafletMouseEvent) => {
     console.log(`Marker was clicked at ${event.latlng}}!`, event)
     const latlng = event.latlng.toString()
 
     props.onMarkerClick(latlng.toString())
   }
 
-  const handleOnMapClick = (event: LeafletMouseEvent) =>
-  {
+  const handleOnMapClick = (event: LeafletMouseEvent) => {
     console.log(`Map was clicked at ${event.latlng}}!`, event)
 
     props.onMarkerClick(undefined)
@@ -31,7 +29,7 @@ const LeafletMap = (props: LeafletMapProps) => {
     if (feature.properties && feature.properties.popupContent) {
       layer.bindPopup(feature.properties.popupContent);
       layer.on('click', handleOnMarkerClick)
-  }
+    }
   }
 
   useEffect(() => {
@@ -47,10 +45,9 @@ const LeafletMap = (props: LeafletMapProps) => {
           })
             .setView([latitude, longitude], 13)
 
-          if(props.geojson)
-          {
+          if (props.geojson) {
             console.log('Adding GeoJSON')
-            L.geoJSON(props.geojson, { onEachFeature: onEachFeature}).addTo(mapRef.current)
+            L.geoJSON(props.geojson, { onEachFeature: onEachFeature }).addTo(mapRef.current)
           }
 
           mapRef.current.on('click', (e: any) => {
@@ -62,7 +59,7 @@ const LeafletMap = (props: LeafletMapProps) => {
             layerGroup.addLayer(marker)
           });
 
-          mapRef.current.on('click', handleOnMapClick )
+          mapRef.current.on('click', handleOnMapClick)
         }
       })
     }
@@ -77,7 +74,7 @@ const LeafletMap = (props: LeafletMapProps) => {
   }, [layerGroup]);
 
   return (
-      <div id="map" className="map-container" />
+    <div id="map" className="map-container" />
   )
 };
 
