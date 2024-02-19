@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./LeafletMap.css";
 import L, { LayerGroup, LeafletMouseEvent, Map } from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 
 export interface LeafletMapProps {
-  label: string;
-  onMarkerClick: (latlng: string | undefined) => void
+  label: string,
+  geojson?: any,
+  onMarkerClick: (latlng: string | undefined) => void,
 }
 
 const LeafletMap = (props: LeafletMapProps) => {
@@ -39,6 +39,12 @@ const LeafletMap = (props: LeafletMapProps) => {
             ]
           })
             .setView([latitude, longitude], 13)
+
+          if(props.geojson)
+          {
+            console.log('Adding GeoJSON')
+            L.geoJSON(props.geojson).addTo(mapRef.current)
+          }
 
           mapRef.current.on('click', (e: any) => {
             const { lat, lng } = e.latlng;
