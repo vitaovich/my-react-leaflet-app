@@ -5,12 +5,27 @@ import 'leaflet/dist/leaflet.css';
 
 export interface LeafletMapProps {
   label: string;
-  onMarkerClick: (event: LeafletMouseEvent) => void
+  onMarkerClick: (latlng: string | undefined) => void
 }
 
 const LeafletMap = (props: LeafletMapProps) => {
   const mapRef = useRef<Map | null>(null);
   const [layerGroup, setLayerGroup] = useState<LayerGroup>(L.layerGroup());
+
+  const handleOnMarkerClick = (event: LeafletMouseEvent) =>
+  {
+    console.log(`Marker was clicked at ${event.latlng}}!`, event)
+    const latlng = event.latlng.toString()
+
+    props.onMarkerClick(latlng.toString())
+  }
+
+  const handleOnMapClick = (event: LeafletMouseEvent) =>
+  {
+    console.log(`Map was clicked at ${event.latlng}}!`, event)
+
+    props.onMarkerClick(undefined)
+  }
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -30,9 +45,11 @@ const LeafletMap = (props: LeafletMapProps) => {
             // Place a marker where the user clicked
             let marker = L.marker([lat, lng]);
             marker.bindPopup("You clicked here!").openPopup();
-            marker.on('click', props.onMarkerClick)
+            marker.on('click', handleOnMarkerClick)
             layerGroup.addLayer(marker)
           });
+
+          mapRef.current.on('click', handleOnMapClick )
         }
       })
     }
@@ -47,10 +64,7 @@ const LeafletMap = (props: LeafletMapProps) => {
   }, [layerGroup]);
 
   return (
-    <>
-      <h3>{props.label}</h3>
       <div id="map" className="map-container" />
-    </>
   )
 };
 

@@ -1,20 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import LeafletMap from './components/LeafletMap/LeafletMap';
-import { LeafletMouseEvent } from 'leaflet';
 
 function App() {
 
-  const handleOnMarkerClick = (event: LeafletMouseEvent) =>
+  const [selectedMarker, setSelectedMarker] = useState<string>() 
+  const handleOnMarkerClick = (latlng: string | undefined) =>
   {
-    console.log(`Marker was clicked at ${event.latlng}}!`, event)
+    console.log(`Map was clicked at ${latlng}}!`)
+    setSelectedMarker(latlng)
   }
 
   return (
     <div className="App">
-      <header className="App-header">
-        <LeafletMap label='My Leaflet Map' onMarkerClick={handleOnMarkerClick}></LeafletMap>
-      </header>
+      <div>
+        <h1>Info</h1>
+        {selectedMarker && <div>Marker: {selectedMarker}</div>}
+      </div>
+      <LeafletMap label='My Leaflet Map' onMarkerClick={handleOnMarkerClick}></LeafletMap>
     </div>
   );
 }
