@@ -5,12 +5,29 @@ import L, { LayerGroup, LeafletMouseEvent, Map } from 'leaflet';
 export interface LeafletMapProps {
   label: string,
   geojson?: any,
+  tool: string,
   onMarkerClick: (latlng: string | undefined) => void,
 }
 
 const LeafletMap = (props: LeafletMapProps) => {
   const mapRef = useRef<Map | null>(null);
   const [layerGroup, setLayerGroup] = useState<LayerGroup>(L.layerGroup());
+  const [markers, setMarkers] = useState<L.Marker[]>([]);
+
+  const handleMapExport = () => {
+
+  }
+
+  const handleOnClick = (event: LeafletMouseEvent) => {
+    switch (props.tool) {
+      case "place_marker":
+        console.log('place marker')
+        break
+      default:
+        console.log('no tool selected')
+        break
+    }
+  }
 
   const handleOnMarkerClick = (event: LeafletMouseEvent) => {
     console.log(`Marker was clicked at ${event.latlng}}!`, event)
@@ -21,7 +38,6 @@ const LeafletMap = (props: LeafletMapProps) => {
 
   const handleOnMapClick = (event: LeafletMouseEvent) => {
     console.log(`Map was clicked at ${event.latlng}}!`, event)
-
     props.onMarkerClick(undefined)
   }
 
@@ -50,7 +66,7 @@ const LeafletMap = (props: LeafletMapProps) => {
             L.geoJSON(props.geojson, { onEachFeature: onEachFeature }).addTo(mapRef.current)
           }
 
-          mapRef.current.on('click', (e: any) => {
+          mapRef.current.on('dblclick', (e: any) => {
             const { lat, lng } = e.latlng;
             // Place a marker where the user clicked
             let marker = L.marker([lat, lng]);
@@ -60,6 +76,7 @@ const LeafletMap = (props: LeafletMapProps) => {
           });
 
           mapRef.current.on('click', handleOnMapClick)
+          mapRef.current.on('click', handleOnClick)
         }
       })
     }
@@ -71,10 +88,13 @@ const LeafletMap = (props: LeafletMapProps) => {
         mapRef.current.remove(); // This properly cleans up the map instance
       }
     };
-  }, [layerGroup]);
+  }, []);
 
   return (
-    <div id="map" className="map-container" />
+    <>
+      <div id="map" className="map-container" />
+      <div>Tool:{props.tool}</div>
+    </>
   )
 };
 
