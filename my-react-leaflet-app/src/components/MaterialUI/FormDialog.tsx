@@ -21,7 +21,7 @@ export default function FormDialog() {
   return (
     <React.Fragment>
       <Button variant="outlined" onClick={handleClickOpen}>
-        Open form dialog
+        Comment
       </Button>
       <Dialog
         open={open}
@@ -38,13 +38,12 @@ export default function FormDialog() {
           },
         }}
       >
-        <DialogTitle>Subscribe</DialogTitle>
+        <DialogTitle>Leave a Comment</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To subscribe to this website, please enter your email address here. We
-            will send updates occasionally.
+            To leave a comment for this archival material, please enter your comment here. Your comment will be stored for future reference.
           </DialogContentText>
-          <TextField
+          {/* <TextField
             autoFocus
             required
             margin="dense"
@@ -54,11 +53,20 @@ export default function FormDialog() {
             type="email"
             fullWidth
             variant="standard"
+          /> */}
+          <TextField
+            id="outlined-multiline-static"
+            label="Multiline"
+            multiline
+            fullWidth
+            rows={4}
+            defaultValue=""
           />
+
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit">Subscribe</Button>
+          <Button type="submit">Comment</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

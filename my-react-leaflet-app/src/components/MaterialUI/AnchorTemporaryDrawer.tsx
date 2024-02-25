@@ -14,7 +14,12 @@ import AccordionExpandDefault from './AccordionExpandDefault';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
-export default function AnchorTemporaryDrawer() {
+type AnchorTemporaryDrawerProps = {
+  selectedMark?: string;
+};
+
+export default function AnchorTemporaryDrawer({ selectedMark }: AnchorTemporaryDrawerProps) {
+  // Rest of the code...
   const [state, setState] = React.useState({
     top: false,
     left: false,
@@ -43,8 +48,9 @@ export default function AnchorTemporaryDrawer() {
     //   onClick={toggleDrawer(anchor, false)}
       onKeyDown={toggleDrawer(anchor, false)}
     >
+      <div className="">{selectedMark}</div>
       <AccordionExpandDefault />
-      <List>
+      {/* <List>
         {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton>
@@ -68,7 +74,7 @@ export default function AnchorTemporaryDrawer() {
             </ListItemButton>
           </ListItem>
         ))}
-      </List>
+      </List> */}
     </Box>
   );
 

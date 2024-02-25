@@ -63,7 +63,7 @@ function App() {
       />
       <div>
         <ColorToggleButton alignment={tool} handleChange={handleAlignmentChange} />
-        <AnchorTemporaryDrawer />
+        <AnchorTemporaryDrawer selectedMark={selectedMarker} />
         <h1>Info</h1>
         {selectedMarker && <div>Marker: {selectedMarker}</div>}
         {tool && <div>Current Tool: {tool}</div>}

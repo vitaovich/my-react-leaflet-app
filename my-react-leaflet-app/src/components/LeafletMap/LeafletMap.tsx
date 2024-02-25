@@ -84,8 +84,8 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geojson, tool, onMarkerClick })
 
   return (
     <>
-      {tool && <div>Current Tool: {tool}</div>}
-      {!tool && <div>Current Tool: None</div>}
+      {/* {tool && <div>Current Tool: {tool}</div>}
+      {!tool && <div>Current Tool: None</div>} */}
       <div ref={mapContainerRef} className="map-container" />
     </>
   );

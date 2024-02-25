@@ -15,7 +15,7 @@ export default function AccordionExpandDefault() {
           aria-controls="panel1-content"
           id="panel1-header"
         >
-          <Typography>Expanded by default</Typography>
+          <Typography>PDF</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
@@ -31,7 +31,7 @@ export default function AccordionExpandDefault() {
           aria-controls="panel2-content"
           id="panel2-header"
         >
-          <Typography>Header</Typography>
+          <Typography>Video</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
