@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import './App.css';
 import LeafletMap from './components/LeafletMap/LeafletMap';
-import ColorToggleButton from './components/Menu/ColorToggleOptions';
+import ColorToggleButton from './components/MaterialUI/ColorToggleOptions';
+import AnchorTemporaryDrawer from './components/MaterialUI/AnchorTemporaryDrawer';
 
 
 
@@ -62,6 +63,7 @@ function App() {
       />
       <div>
         <ColorToggleButton alignment={tool} handleChange={handleAlignmentChange} />
+        <AnchorTemporaryDrawer />
         <h1>Info</h1>
         {selectedMarker && <div>Marker: {selectedMarker}</div>}
         {tool && <div>Current Tool: {tool}</div>}
