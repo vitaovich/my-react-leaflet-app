@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './App.css';
 import LeafletMap from './components/LeafletMap/LeafletMap';
+import ColorToggleButton from './components/Menu/ColorToggleOptions';
+
 
 
 const GEOJSONFEATURE = [
@@ -36,24 +38,18 @@ function App() {
   const [selectedMarker, setSelectedMarker] = useState<string>()
   const [tool, setTool] = useState<string>('')
   const [dataGeoJson, setDataGeoJson] = useState<any[]>(GEOJSONFEATURE)
+
+  const handleAlignmentChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newAlignment: string,
+  ) => {
+    setTool(newAlignment)
+  };
+
+
   const handleOnMarkerClick = (latlng: string | undefined) => {
     console.log(`Map was clicked at ${latlng}}!`)
     setSelectedMarker(latlng)
-  }
-
-  const handleExport = () =>
-  {
-    console.log('export map.')
-  }
-
-  const handleImport = () =>
-  {
-    console.log('import map.')
-  }
-
-  const handleToolBarSelect = (tool: string) =>
-  {
-    setTool(tool)
   }
 
   return (
@@ -65,13 +61,10 @@ function App() {
         onMarkerClick={handleOnMarkerClick}
       />
       <div>
+        <ColorToggleButton alignment={tool} handleChange={handleAlignmentChange} />
         <h1>Info</h1>
         {selectedMarker && <div>Marker: {selectedMarker}</div>}
         {tool && <div>Current Tool: {tool}</div>}
-        <button onClick={() => handleToolBarSelect('place_marker')}>Place Marker</button>
-        <button onClick={() => handleToolBarSelect('delete_marker')}>Delete</button>
-        <button onClick={() => handleToolBarSelect('Import')}>Import</button>
-        <button onClick={() => handleToolBarSelect('Export')}>Export</button>
       </div>
     </div>
   );
