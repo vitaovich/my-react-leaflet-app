@@ -1,101 +1,94 @@
-import React, { useEffect, useRef, useState } from "react";
-import "./LeafletMap.css";
-import L, { LayerGroup, LeafletMouseEvent, Map } from 'leaflet';
+import React, { useEffect, useRef } from 'react';
+import L, { LeafletMouseEvent } from 'leaflet';
+import './LeafletMap.css';
 
 export interface LeafletMapProps {
-  label: string,
-  geojson?: any,
-  tool: string,
-  onMarkerClick: (latlng: string | undefined) => void,
+  label: string;
+  geojson?: any;
+  tool: string;
+  onMarkerClick: (latlng?: string) => void;
 }
 
-const LeafletMap = (props: LeafletMapProps) => {
-  const mapRef = useRef<Map | null>(null);
-  const [layerGroup, setLayerGroup] = useState<LayerGroup>(L.layerGroup());
-  const [markers, setMarkers] = useState<L.Marker[]>([]);
-
-  const handleMapExport = () => {
-
-  }
-
-  const handleOnClick = (event: LeafletMouseEvent) => {
-    switch (props.tool) {
-      case "place_marker":
-        console.log('place marker')
-        break
-      default:
-        console.log('no tool selected')
-        break
-    }
-  }
+const LeafletMap: React.FC<LeafletMapProps> = ({ geojson, tool, onMarkerClick }) => {
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
 
   const handleOnMarkerClick = (event: LeafletMouseEvent) => {
     console.log(`Marker was clicked at ${event.latlng}}!`, event)
     const latlng = event.latlng.toString()
 
-    props.onMarkerClick(latlng.toString())
+    onMarkerClick(latlng.toString())
   }
 
-  const handleOnMapClick = (event: LeafletMouseEvent) => {
-    console.log(`Map was clicked at ${event.latlng}}!`, event)
-    props.onMarkerClick(undefined)
-  }
+  const handleMapClick = (event: LeafletMouseEvent) => {
+    console.log(`Map was clicked at ${event.latlng}!`);
 
-  const onEachFeature = (feature: any, layer: L.Layer) => {
-    if (feature.properties && feature.properties.popupContent) {
-      layer.bindPopup(feature.properties.popupContent);
-      layer.on('click', handleOnMarkerClick)
+    if (tool === 'place_marker') {
+      console.log('Placing marker');
+      const marker = L.marker(event.latlng).addTo(mapRef.current as L.Map);
+      marker.bindPopup('You clicked here!').openPopup();
+      marker.on('click', () => onMarkerClick(event.latlng.toString()));
+    } else {
+      console.log('clicked map but no tool selected');
     }
-  }
+  };
+
+  const handleMapDoubleClick = (event: LeafletMouseEvent) => {
+    onMarkerClick();
+  };
 
   useEffect(() => {
-    if (navigator.geolocation) {
+    if (mapContainerRef.current && !mapRef.current) {
+      console.log('Initializing map')
+      // Initialize the map only when the div is available and the map hasn't been initialized
+      mapRef.current = L.map(mapContainerRef.current).setView([0, 0], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapRef.current);
+
+      // Attempt to use geolocation
       navigator.geolocation.getCurrentPosition((position) => {
         const { latitude, longitude } = position.coords;
-        if (!mapRef.current) {
-          mapRef.current = L.map('map', {
-            layers: [
-              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
-              layerGroup
-            ]
-          })
-            .setView([latitude, longitude], 13)
-
-          if (props.geojson) {
-            console.log('Adding GeoJSON')
-            L.geoJSON(props.geojson, { onEachFeature: onEachFeature }).addTo(mapRef.current)
-          }
-
-          mapRef.current.on('dblclick', (e: any) => {
-            const { lat, lng } = e.latlng;
-            // Place a marker where the user clicked
-            let marker = L.marker([lat, lng]);
-            marker.bindPopup("You clicked here!").openPopup();
-            marker.on('click', handleOnMarkerClick)
-            layerGroup.addLayer(marker)
-          });
-
-          mapRef.current.on('click', handleOnMapClick)
-          mapRef.current.on('click', handleOnClick)
-        }
-      })
+        mapRef.current?.setView([latitude, longitude], 13);
+      });
     }
-    else {
-      console.log('already initialized')
-    }
+
+    // Cleanup function to remove the map on component unmount
     return () => {
-      if (mapRef.current) {
-        mapRef.current.remove(); // This properly cleans up the map instance
-      }
+      mapRef.current?.remove();
+      mapRef.current = null;
     };
-  }, []);
+  }, []); // Empty dependency array ensures this effect runs only once on mount
+
+  useEffect(() => {
+    if (mapRef.current) {
+      // Set up event listeners
+      mapRef.current.on('click', handleMapClick);
+      mapRef.current.on('dblclick', handleMapDoubleClick);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tool]); // Re-run this effect if tool prop changes
+
+  useEffect(() => {
+    if (mapRef.current && geojson) {
+      // Add GeoJSON layer
+      L.geoJSON(geojson, {
+        onEachFeature: (feature, layer) => {
+          if (feature.properties?.popupContent) {
+            layer.bindPopup(feature.properties.popupContent);
+            layer.on('click', handleOnMarkerClick);
+          }
+        },
+      }).addTo(mapRef.current);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [geojson]); // Re-run this effect if geojson prop changes
 
   return (
     <>
-      <div id="map" className="map-container" />
-      <div>Tool:{props.tool}</div>
+      {tool && <div>Current Tool: {tool}</div>}
+      {!tool && <div>Current Tool: None</div>}
+      <div ref={mapContainerRef} className="map-container" />
     </>
-  )
+  );
 };
 
 export default LeafletMap;
