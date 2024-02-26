@@ -47,7 +47,6 @@ function App() {
     setTool(newAlignment)
   };
 
-
   const handleOnMarkerClick = (latlng: string | undefined) => {
     console.log(`Map was clicked at ${latlng}}!`)
     setSelectedMarker(latlng)

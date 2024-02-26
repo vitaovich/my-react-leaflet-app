@@ -33,10 +33,6 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geojson, tool, onMarkerClick })
     }
   };
 
-  const handleMapDoubleClick = (event: LeafletMouseEvent) => {
-    onMarkerClick();
-  };
-
   useEffect(() => {
     if (mapContainerRef.current && !mapRef.current) {
       console.log('Initializing map')
@@ -62,7 +58,6 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geojson, tool, onMarkerClick })
     if (mapRef.current) {
       // Set up event listeners
       mapRef.current.on('click', handleMapClick);
-      mapRef.current.on('dblclick', handleMapDoubleClick);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tool]); // Re-run this effect if tool prop changes
@@ -84,8 +79,6 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geojson, tool, onMarkerClick })
 
   return (
     <>
-      {/* {tool && <div>Current Tool: {tool}</div>}
-      {!tool && <div>Current Tool: None</div>} */}
       <div ref={mapContainerRef} className="map-container" />
     </>
   );
