@@ -38,7 +38,9 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geojson, tool, onMarkerClick })
       console.log('Initializing map')
       // Initialize the map only when the div is available and the map hasn't been initialized
       mapRef.current = L.map(mapContainerRef.current).setView([0, 0], 13);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapRef.current);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap contributors, © CARTO'
+      }).addTo(mapRef.current);
 
       // Attempt to use geolocation
       navigator.geolocation.getCurrentPosition((position) => {
