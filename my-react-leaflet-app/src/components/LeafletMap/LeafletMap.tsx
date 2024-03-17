@@ -11,6 +11,8 @@ export interface LeafletMapProps {
 
 const LeafletMap: React.FC<LeafletMapProps> = ({ geojson, tool, onMarkerClick }) => {
   const mapRef = useRef<L.Map | null>(null);
+  const mapLayerControlRef = useRef<L.Control.Layers | null>(null);
+  const mapCustomLayerGroupRef = useRef<L.LayerGroup | null>(null);
   const toolRef = useRef<string>(tool);
 
   const handleOnMarkerClick = (event: LeafletMouseEvent) => {
@@ -29,6 +31,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geojson, tool, onMarkerClick })
       const marker = L.marker(event.latlng).addTo(mapRef.current as L.Map);
       marker.bindPopup('You clicked here!').openPopup();
       marker.on('click', () => onMarkerClick(event.latlng.toString()));
+      mapCustomLayerGroupRef.current?.addLayer(marker);
     } else {
       console.log('clicked map but no tool selected');
     }
@@ -38,10 +41,18 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geojson, tool, onMarkerClick })
     if (!mapRef.current) {
       console.log('Initializing map')
       // Initialize the map only when the div is available and the map hasn't been initialized
-      mapRef.current = L.map('leaflet_map_container').setView([47.84, -122.21], 13);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      let cartoTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         attribution: '© OpenStreetMap contributors, © CARTO'
-      }).addTo(mapRef.current);
+      });
+
+      let osmTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      });
+
+      mapRef.current = L.map('leaflet_map_container', {center: [47.84, -122.21], zoom: 13, layers: [cartoTileLayer, osmTileLayer]})
+      mapCustomLayerGroupRef.current = L.layerGroup().addTo(mapRef.current);
+      mapLayerControlRef.current = L.control.layers({ "Carto": cartoTileLayer, "OSM": osmTileLayer }).addTo(mapRef.current);
+      mapLayerControlRef.current?.addOverlay(mapCustomLayerGroupRef.current, "User Added Layer");
       mapRef.current.on('click', handleMapClick);
 
       // Attempt to use geolocation
@@ -66,7 +77,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geojson, tool, onMarkerClick })
   useEffect(() => {
     if (mapRef.current && geojson) {
       // Add GeoJSON layer
-      L.geoJSON(geojson, {
+      const geoJSON = L.geoJSON(geojson, {
         onEachFeature: (feature, layer) => {
           if (feature.properties?.popupContent) {
             layer.bindPopup(feature.properties.popupContent);
@@ -74,6 +85,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geojson, tool, onMarkerClick })
           }
         },
       }).addTo(mapRef.current);
+      mapLayerControlRef.current?.addOverlay(geoJSON, 'GeoJSON');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [geojson]); // Re-run this effect if geojson prop changes
