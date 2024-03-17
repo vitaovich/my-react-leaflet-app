@@ -51,7 +51,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geojson, tool, onMarkerClick })
 
       mapRef.current = L.map('leaflet_map_container', {center: [47.84, -122.21], zoom: 13, layers: [cartoTileLayer, osmTileLayer]})
       mapCustomLayerGroupRef.current = L.layerGroup().addTo(mapRef.current);
-      mapLayerControlRef.current = L.control.layers({ "Carto": cartoTileLayer, "OSM": osmTileLayer }).addTo(mapRef.current);
+      mapLayerControlRef.current = L.control.layers({ "Carto Dark Matter": cartoTileLayer, "OSM": osmTileLayer }).addTo(mapRef.current);
       mapLayerControlRef.current?.addOverlay(mapCustomLayerGroupRef.current, "User Added Layer");
       mapRef.current.on('click', handleMapClick);
 
