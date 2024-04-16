@@ -19,15 +19,17 @@ jobs:
 
     - name: Install dependencies
       run: npm install
+      working-directory: my-react-leaflet-app
 
     - name: Build React project
       run: npm run build
+      working-directory: my-react-leaflet-app
 
     - name: Archive production artifacts
       uses: actions/upload-artifact@v2
       with:
         name: build
-        path: build
+        path: my-react-leaflet-app/build
 
   deploy:
     needs: build
