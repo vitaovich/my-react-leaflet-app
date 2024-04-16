@@ -6,7 +6,7 @@ on:
       - main  # Set to your default branch
 
 jobs:
-  build:
+  build-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,6 +23,10 @@ jobs:
 
     - name: Build React project
       run: npm run build
+      working-directory: my-react-leaflet-app
+
+    - name: Test React project
+      run: npm test
       working-directory: my-react-leaflet-app
 
     - name: Archive production artifacts
