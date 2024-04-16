@@ -1,0 +1,50 @@
+name: Build and Deploy to Azure
+
+on:
+  push:
+    branches:
+      - main  # Set to your default branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20' # Specify your Node.js version
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build React project
+      run: npm run build
+
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: build
+        path: build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v2
+      with:
+        name: build
+
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZ_STORAGE_DEPLOYER }}
+
+    - name: Upload to blob storage
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+            az storage blob upload-batch --account-name vialekhnstore --auth-mode key -d '$web' -s .
+            
+    - uses: azure/logout@v1
