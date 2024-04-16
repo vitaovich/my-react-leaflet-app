@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Node.js
       uses: actions/setup-node@v2
@@ -49,4 +49,8 @@ jobs:
         inlineScript: |
             az storage blob upload-batch --account-name vialekhnstore --auth-mode key -d '$web' -s .
             
-    - uses: azure/logout@v1
+    # Azure logout
+    - name: logout
+      run: |
+            az logout
+      if: always()
