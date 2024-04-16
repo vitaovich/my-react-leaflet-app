@@ -22,20 +22,20 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geojson, tool, onMarkerClick })
     onMarkerClick(latlng.toString())
   }
 
-  const handleMapClick = (event: LeafletMouseEvent) => {
-    const curTool = toolRef.current;
-    console.log(`Map was clicked at ${event.latlng}!`);
-    console.log('Tool:', curTool)
-    if (curTool === 'place_marker') {
-      console.log('Placing marker');
-      const marker = L.marker(event.latlng).addTo(mapRef.current as L.Map);
-      marker.bindPopup('You clicked here!').openPopup();
-      marker.on('click', () => onMarkerClick(event.latlng.toString()));
-      mapCustomLayerGroupRef.current?.addLayer(marker);
-    } else {
-      console.log('clicked map but no tool selected');
-    }
-  };
+  // const handleMapClick = (event: LeafletMouseEvent) => {
+  //   const curTool = toolRef.current;
+  //   console.log(`Map was clicked at ${event.latlng}!`);
+  //   console.log('Tool:', curTool)
+  //   if (curTool === 'place_marker') {
+  //     console.log('Placing marker');
+  //     const marker = L.marker(event.latlng).addTo(mapRef.current as L.Map);
+  //     marker.bindPopup('You clicked here!').openPopup();
+  //     marker.on('click', () => onMarkerClick(event.latlng.toString()));
+  //     mapCustomLayerGroupRef.current?.addLayer(marker);
+  //   } else {
+  //     console.log('clicked map but no tool selected');
+  //   }
+  // };
 
   useEffect(() => {
     if (!mapRef.current) {
@@ -53,7 +53,6 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geojson, tool, onMarkerClick })
       mapCustomLayerGroupRef.current = L.layerGroup().addTo(mapRef.current);
       mapLayerControlRef.current = L.control.layers({ "Carto Dark Matter": cartoTileLayer, "OSM": osmTileLayer }).addTo(mapRef.current);
       mapLayerControlRef.current?.addOverlay(mapCustomLayerGroupRef.current, "User Added Layer");
-      mapRef.current.on('click', handleMapClick);
 
       // Attempt to use geolocation
       navigator.geolocation.getCurrentPosition((position) => {
